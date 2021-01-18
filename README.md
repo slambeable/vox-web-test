@@ -1,5 +1,11 @@
 # vox-web-test
 
+## Description
+
+Online service with registration, the ability to change profile settings, view and edit charts and view the list of tasks.
+
+[Git Pages](https://slambeable.github.io/vox-web-test/)
+
 ## Build Setup
 
 ```bash
