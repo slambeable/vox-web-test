@@ -1,5 +1,11 @@
 # vox-web-test
 
+## Description
+
+Online service with registration, the ability to change profile settings, view and edit charts and view the list of tasks.
+
+[Git Pages](https://slambeable.github.io/vox-web-test/)
+
 ## Build Setup
 
 ```bash
@@ -15,6 +21,7 @@ $ npm run start
 
 # generate static project
 $ npm run generate
+$ npm run deploy
 ```
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
