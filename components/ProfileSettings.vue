@@ -1,124 +1,208 @@
 <template>
   <form
-    class="profile-settings"
+    class="profile-setings"
     @submit.prevent="submitHandler"
   >
-    <div class="profile-column">
-      <label class="profile__label">
+    <div class="profile-setings-column">
+      <label class="profile-setings__label">
         Имя
         <input
-          v-model="firstName"
+          v-model.trim="form.firstName"
           :class="[
-            'profile__input',
-            $v.firstName.$error ? 'profile__input_error' : ''
+            'profile-setings__input',
+            $v.form.firstName.$error ? 'profile-setings__input_error' : ''
           ]"
           type="text"
         >
       </label>
-      <div class="profile-column-errors">
-        <small
-          v-if="$v.firstName.$dirty && !$v.firstName.required"
-          class="profile-column-errors__first-name"
-        >
-          Пожалуйста заполните поле
-        </small>
-        <small
-          v-if="$v.firstName.$dirty && !$v.firstName.containsOnlyLatinOrCyrillicLetters"
-          class="profile-column-errors__first-name"
-        >
-          Имя может содержать только латиницу или кириллицу
-        </small>
-      </div>
-      <label class="profile__label">
+      <errors-message
+        :class-name="'profile-setings-column-errors'"
+        :errors="dataFirstNameErrors"
+        top="8px"
+      />
+      <label class="profile-setings__label">
         Фамилия
         <input
-          v-model="lastName"
+          v-model.trim="form.lastName"
           :class="[
-            'profile__input',
-            $v.lastName.$error ? 'profile__input_error' : ''
+            'profile-setings__input',
+            $v.form.lastName.$error ? 'profile-setings__input_error' : ''
           ]"
           type="text"
         >
       </label>
-      <div class="profile-column-errors">
-        <small
-          v-if="$v.lastName.$dirty && !$v.lastName.required"
-          class="profile-column-errors__last-name"
-        >
-          Пожалуйста заполните поле
-        </small>
-        <small
-          v-if="$v.lastName.$dirty && !$v.lastName.containsOnlyLatinOrCyrillicLetters"
-          class="profile-column-errors__last-name"
-        >
-          Фамилмя может содержать только латиницу или кириллицу
-        </small>
-      </div>
+      <errors-message
+        :class-name="'profile-setings-column-errors'"
+        :errors="dataLastNameErrors"
+        top="8px"
+      />
     </div>
-    <div class="profile-column">
-      <label class="profile__label">
+    <div class="profile-setings-column">
+      <label class="profile-setings__label">
         Сменить пароль
         <input
-          v-model="newPassword"
+          v-model.trim="form.password"
           :class="[
-            'profile__input',
-            $v.newPassword.$error ? 'profile__input_error' : ''
+            'profile-setings__input',
+            $v.form.password.$error ? 'profile-setings__input_error' : ''
           ]"
-          type="text"
+          type="password"
         >
       </label>
-      <div class="profile-column-errors">
-        <small
-          v-if="$v.newPassword.$dirty
-            && (!$v.newPassword.containsOnlyPassword
-              || (!$v.newPassword.minLength || !$v.newPassword.maxLength)
-              || (
-                !$v.newPassword.containsLowercase
-                || !$v.newPassword.containsUppercase
-                || !$v.newPassword.containsNumber
-                || !$v.newPassword.containsSpecial
-              ))"
-          class="profile-column-errors__new-password"
-        >
-          Пароль введен некорректно
-        </small>
-      </div>
-      <label class="profile__label">
+      <errors-message
+        :class-name="'profile-setings-column-errors'"
+        :errors="dataPasswordErrors"
+        top="8px"
+      />
+      <label class="profile-setings__label">
         Сменить логин
         <input
-          v-model="newLogin"
+          v-model.trim="form.login"
           :class="[
-            'profile__input',
-            $v.newLogin.$error ? 'profile__input_error' : ''
+            'profile-setings__input',
+            $v.form.login.$error ? 'profile-setings__input_error' : ''
           ]"
           type="text"
         >
       </label>
-      <div class="profile-column-errors">
-        <small
-          v-if="$v.newLogin.$dirty
-            && (!$v.newLogin.containsOnlyLatinLetters
-              || (!$v.newLogin.minLength || !$v.newLogin.maxLength))"
-          class="profile-column-errors__new-login"
-        >
-          Логин введен некорректно
-        </small>
-      </div>
-      <button class="profile__button">
-        Сохранить
-      </button>
+      <errors-message
+        :class-name="'profile-setings-column'"
+        :errors="dataLoginErrors"
+        :top="'8px'"
+      />
+      <submit-button
+        :text="submitButtonText"
+        :class-name="'profile-setings'"
+        :width="'202px'"
+        :float="'right'"
+        :margin-top="'29px'"
+      />
     </div>
   </form>
 </template>
 
+<script>
+import { validationMixin } from 'vuelidate'
+import {
+  required, maxLength, minLength
+} from 'vuelidate/lib/validators'
+import
+{
+  containsUppercase,
+  containsLowercase,
+  containsNumber,
+  containsSpecial,
+  containsOnlyLatinLetters,
+  containsOnlyPassword,
+  containsOnlyLatinOrCyrillicLetters
+} from '@/assets/utils/customVuelidate'
+import data from '@/mixins/data/vuelidate'
+import ErrorsMessage from '@/components/elements/ErrorsMessage'
+import SubmitButton from '@/components/elements/SubmitButton'
+
+export default {
+  components: {
+    ErrorsMessage,
+    SubmitButton
+  },
+  mixins: [
+    validationMixin,
+    data
+  ],
+  data () {
+    return {
+      form: {
+        firstName: '',
+        lastName: '',
+        login: '',
+        password: ''
+      },
+      submitButtonText: 'Сохранить'
+    }
+  },
+  watch: {
+    'form.firstName' () {
+      this.form.firstName = this._.capitalize(this.form.firstName)
+    },
+    'form.lastName' () {
+      this.form.lastName = this._.capitalize(this.form.lastName)
+    }
+  },
+  created () {
+    this.$v.form.firstName.$touch()
+    this.$v.form.lastName.$touch()
+
+    this.form.firstName = this.$store.getters['user/firstName'] ?? ''
+    this.form.lastName = this.$store.getters['user/lastName'] ?? ''
+  },
+  methods: {
+    submitHandler () {
+      if (this.form.login !== '') {
+        this.$v.form.login.$touch()
+
+        if (!this.$v.form.login.$error) {
+          this.$store.commit('user/setLogin', this.form.login)
+        }
+      }
+
+      if (this.form.password !== '') {
+        this.$v.form.password.$touch()
+
+        if (!this.$v.form.password.$error) {
+          this.$store.commit('user/setPassword', this.form.password)
+        }
+      }
+
+      if (!this.$v.form.firstName.$error) {
+        this.$store.commit('user/setFirstName', this.form.firstName)
+      }
+
+      if (!this.$v.form.lastName.$error) {
+        this.$store.commit('user/setLastName', this.form.lastName)
+      }
+    }
+  },
+  validations () {
+    return {
+      form: {
+        firstName: {
+          required,
+          containsOnlyLatinOrCyrillicLetters
+        },
+        lastName: {
+          required,
+          containsOnlyLatinOrCyrillicLetters
+        },
+        login: {
+          containsOnlyLatinLetters,
+          minLength: minLength(3),
+          maxLength: maxLength(20)
+        },
+        password: {
+          containsOnlyPassword,
+          minLength: minLength(8),
+          maxLength: maxLength(25),
+          containsLowercase,
+          containsUppercase,
+          containsNumber,
+          containsSpecial
+        }
+      }
+    }
+  }
+}
+</script>
+
 <style lang='scss'>
-.profile-settings {
+@import '../assets/style/colors';
+
+.profile-setings {
   display: flex;
   min-height: 252px;
   flex-wrap: wrap;
   justify-content: space-evenly;
   margin-top: 24px;
-  background: #fff;
+  background: $panel;
   border-radius: 10px;
 
   &-column {
@@ -127,72 +211,39 @@
     &:nth-child(2) {
       margin-bottom: 90px;
     }
-
-    &-errors {
-      position: absolute;
-      width: 100%;
-      margin-bottom: 15px;
-      white-space: nowrap;
-
-      &__first-name,
-      &__last-name,
-      &__new-login,
-      &__new-password {
-        display: block;
-        width: 100%;
-        margin-bottom: 5px;
-        color: #d6073d;
-        font-size: smaller;
-        text-align: left;
-      }
-    }
   }
 
   &__label {
     display: block;
-    margin-top: 24px;
-    color: #6f849c;
+    margin-top: 34px;
+    color: $exit;
     font-size: 14px;
+    font-weight: 400;
+
+    @media (max-width: 768px) {
+      width: 296px;
+    }
   }
 
   &:focus {
-    border-color: #6f849c;
+    border-color: $exit;
   }
 
   &__input {
     display: block;
     width: 360px;
     border: 0;
-    border-bottom: 1px solid #eff1f9;
+    border-bottom: 1px solid $line;
     margin-top: 8px;
     font-size: 14px;
     outline: none;
 
     &_error {
-      border-color: #d6073d;
+      border-color: $main-theme;
 
       &:focus {
-        border-color: #d6073d;
+        border-color: $main-theme;
       }
-    }
-  }
-
-  &__button {
-    position: absolute;
-    right: 0;
-    width: 202px;
-    height: 44px;
-    border: 0;
-    margin-top: 29px;
-    background: #d6073d;
-    border-radius: 10px;
-    color: #fff;
-    cursor: pointer;
-    outline: none;
-    text-decoration: none;
-
-    &:hover {
-      background: darken(#d6073d, 12.5%);
     }
 
     @media (max-width: 768px) {

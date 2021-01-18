@@ -3,47 +3,46 @@
     <h1 class="title">
       Список задач
     </h1>
-    <div class="charts">
-      <line-chart :action="action" :chart-data="datacollection" :height="chartHeight" :options="options" />
-    </div>
-    <div>
-      <button @click="editChart">
-        lol1
-      </button>
-      <button @click="addList">
-        lol2
-      </button>
-      <button @click="removeList">
-        lol3
-      </button>
-      <button @click="addData">
-        lol5
-      </button>
-      <button @click="removeData">
-        lol6
-      </button>
+    <div class="chart">
+      <line-chart
+        :chart-data="dataCollection"
+        :options="options"
+      />
+      <chart-controller
+        :class-name="'statistics'"
+        :update="update"
+        :data="dataCollection"
+        :proprieties="datasetProprieties"
+        :create="create"
+        :month="month"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import LineChart from '@/components/LineChart'
-import random from '@/mixins/getRandom'
 import sizeDeviceDetecter from '@/mixins/sizeDeviceDetecter'
+import customChart from '@/mixins/data/customChart'
+import ChartController from '@/components/elements/ChartController'
+import random from '@/mixins/getRandom'
 
 export default {
   components: {
-    LineChart
+    LineChart,
+    ChartController
   },
   mixins: [
-    random,
-    sizeDeviceDetecter
+    sizeDeviceDetecter,
+    customChart,
+    random
   ],
   data () {
     return {
       action: false,
       isMobile: null,
-      datacollection: null,
+      dataCollection: {},
+      options: null,
       month: [
         'Январь',
         'Февраль',
@@ -57,7 +56,7 @@ export default {
         'Ноябрь',
         'Декабрь'
       ],
-      datasetProprietes: [
+      datasetProprieties: [
         {
           text: 'Первая дата',
           color: '#eeb969'
@@ -79,156 +78,20 @@ export default {
           color: '#808000'
         }
       ],
-      options: {
-        legend: {
-          labels: {
-            fullWidth: true,
-            fontColor: '#cbcbcb'
-          }
-        },
-        tooltips: {
-          intersect: false,
-          mode: 'x',
-          xPadding: 11,
-          yPadding: 15,
-          borderWidth: 25,
-          borderColor: '#fff',
-          backgroundColor: '#fff',
-          bodyFontColor: '#cbcbcb',
-          bodySpacing: 3,
-          bodyFontSize: 14,
-          cornerRadius: 5,
-          caretSize: 0,
-          callbacks: {
-            title () {}
-          },
-          shadowOffsetX: 0,
-          shadowOffsetY: 1,
-          shadowColor: 'rgba(0, 0, 0, 0.15)'
-        },
-        scales: {
-          yAxes: [{
-            ticks: {
-              fontColor: '#cbcbcb',
-              fontSize: 14,
-              padding: 10
-            },
-            gridLines: {
-              lineWidth: 2,
-              zeroLineWidth: 2,
-              drawTicks: false
-            }
-          }],
-          xAxes: [{
-            ticks: {
-              fontColor: '#cbcbcb',
-              fontSize: 14,
-              padding: 10
-            },
-            gridLines: {
-              drawTicks: false
-            }
-          }]
-        }
-      },
       monthCounter: 4,
       lineCounter: 2
     }
   },
-  computed: {
-    chartHeight () {
-      return this.isMobile ? 400 : 200
-    }
-  },
   created () {
     this.handleDeviseSize()
-    this.fillData()
+    this.fillChartDataAndOptions(this.getRandomWithNegative)
   },
   methods: {
-    fillData () {
-      this.datacollection = {
-        labels: this.isMobile ? this.month.slice(0, 4) : this.month.slice(0, 6),
-        datasets: [...this._.fill(Array(2), null).map((value, index) => {
-          return this.createDataset(this.datasetProprietes[index], this.isMobile ? 5 : 7)
-        })]
-      }
+    update () {
+      return this.$children[0].$data._chart.update()
     },
-    createDataset ({ text, color }, count) {
-      return {
-        label: text,
-        borderColor: color,
-        backgroundColor: color,
-        pointBackgroundColor: '#fff',
-        pointBorderColor: color,
-        pointBorderWidth: 2,
-        pointRadius: 4,
-        fill: false,
-        data: this._.fill(Array(count)).map(() => this.getRandomWithNegative(0, 100))
-      }
-    },
-    editChart (e, update) {
-      this.datacollection.datasets.forEach((dataset, i) => {
-        dataset.data = dataset.data.map(() => this.getRandomWithNegative(0, 100))
-      })
-
-      this.doAction()
-    },
-    addData (e) {
-      if (this.datacollection.labels.length < 11) {
-        this.datacollection.datasets.forEach((dataset) => {
-          dataset.data = [
-            ...dataset.data,
-            this.getRandomWithNegative(0, 100)
-          ]
-        })
-        this.datacollection.labels = this.month.slice(0, this.datacollection.labels.length + 1)
-
-        e.target.parentNode.style.pointerEvents = 'none'
-        this.doAction()
-        e.target.parentNode.style.pointerEvents = 'auto'
-      }
-    },
-    removeData (e) {
-      if (this.datacollection.labels.length > 3) {
-        this.datacollection.datasets.forEach((dataset) => {
-          dataset.data = [
-            ...dataset.data.slice(0, dataset.data.length - 1)
-          ]
-        })
-        this.datacollection.labels = this.month.slice(0, this.datacollection.labels.length - 1)
-
-        e.target.parentNode.style.pointerEvents = 'none'
-        this.doAction()
-        e.target.parentNode.style.pointerEvents = 'auto'
-      }
-    },
-    addList (e) {
-      if (this.datacollection.datasets.length < 5) {
-        this.datacollection.datasets = [
-          ...this.datacollection.datasets,
-          this.createDataset(this.datasetProprietes[this.datacollection.datasets.length],
-            this.datacollection.datasets[0].data.length)
-        ]
-
-        e.target.parentNode.style.pointerEvents = 'none'
-        this.doAction()
-        e.target.parentNode.style.pointerEvents = 'auto'
-      }
-    },
-    removeList (e) {
-      if (this.datacollection.datasets.length > 1) {
-        this.datacollection.datasets = [
-          ...this.datacollection.datasets.slice(0, this.datacollection.datasets.length - 1)
-        ]
-
-        e.target.parentNode.style.pointerEvents = 'none'
-        this.doAction()
-        e.target.parentNode.style.pointerEvents = 'auto'
-      }
-    },
-    doAction () {
-      this.action = false
-      this.action = true
+    create ({ text, color }, count) {
+      return this.createDataset({ text, color }, count)
     }
   },
   layout: 'main',
@@ -237,17 +100,16 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../../assets/style/mixins';
+@import '~assets/style/mixins';
 
 @include title();
 
-.charts {
+.chart {
   position: relative;
-  height: 584px;
   min-height: 359px;
   padding: 41px 40px 37px 36px;
   margin-top: 24px;
-  background: #fff;
+  background: $panel;
   border-radius: 10px;
 
   @media (max-width: 768px) {
@@ -255,7 +117,10 @@ export default {
   }
 }
 
-#line-chart {
+.chart > div:nth-child(1) {
+  width: 99% !important;
+  height: 90% !important;
+  margin: 0 auto;
   cursor: pointer;
 }
 </style>

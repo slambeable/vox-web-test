@@ -57,11 +57,13 @@ export default {
 </script>
 
 <style lang='scss'>
+@import '../assets/style/colors';
+
 .task-list {
   min-height: 359px;
   padding: 1px;
   margin-top: 24px;
-  background: #fff;
+  background: $panel;
   border-radius: 10px;
 
   &-header,
@@ -74,7 +76,7 @@ export default {
     height: 46px;
     justify-content: space-between;
     margin-top: 32px;
-    color: #bababa;
+    color: $tasks;
 
     &__task {
       margin-left: 40px;
@@ -94,7 +96,7 @@ export default {
   }
 
   .line {
-    border: 1px solid #eff1f9;
+    border: 1px solid $line;
     margin-right: 44px;
     margin-left: 40px;
 
@@ -144,16 +146,16 @@ export default {
         left: -31px;
         width: 24px;
         height: 24px;
-        border: 1px solid #bababa;
+        border: 1px solid $tasks;
         content: '';
       }
 
       &_completed {
-        color: #51cb3d;
+        color: $completed;
       }
 
       &_completed::before {
-        background: url('../assets/images/check.svg') no-repeat center;
+        background: url('~assets/images/check.svg') no-repeat center;
       }
     }
   }

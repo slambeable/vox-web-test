@@ -9,125 +9,116 @@
       alt="logo"
     >
     <input
-      v-model="login"
+      v-model.trim="form.login"
       :class="[
         'users-form__login',
-        $v.login.$error ? 'users-form__login_error' : ''
+        $v.form.login.$error || correctAuthenticationError ? 'users-form__login_error' : ''
       ]"
       type="text"
       placeholder="Логин"
     >
-    <errors-massege
-      :class-name="'users-form-errors'"
+    <errors-message
+      :top="'8px'"
+      :class-name="'users-form'"
       :errors="dataLoginErrors"
     />
     <input
-      v-model="password"
+      v-model.trim="form.password"
       :class="[
         'users-form__password',
-        $v.password.$error ? 'users-form__password_error' : ''
+        $v.form.password.$error || correctAuthenticationError ? 'users-form__password_error' : ''
       ]"
       type="password"
       placeholder="Пароль"
     >
-    <div class="users-form-errors">
-      <small
-        v-if="$v.password.$dirty && !$v.password.required"
-        class="users-form-errors__password"
-      >
-        Введите пожалуйста пароль
-      </small>
-      <small
-        v-else-if="$v.password.$dirty && !$v.password.containsOnlyPassword"
-        class="users-form-errors__password"
-      >
-        Пароль может содержать только латинские буквы, цифры и специальные символы
-      </small>
-      <small
-        v-else-if="$v.password.$dirty && (!$v.password.minLength || !$v.password.maxLength)"
-        class="users-form-errors__password"
-      >
-        Пароль должен быть не менее 8 и не более 25 символов
-      </small>
-      <small
-        v-else-if="$v.password.$dirty &&
-          (
-            !$v.password.containsLowercase
-            || !$v.password.containsUppercase
-            || !$v.password.containsNumber
-            || !$v.password.containsSpecial
-          )"
-        class="users-form-errors__password"
-      >
-        Пароль должен содержать хотя бы одну прописную и одну строчную букву, а также цифру и специальный символ
-      </small>
-    </div>
-    <div class="users-form-errors">
+    <errors-message
+      :top="'8px'"
+      :class-name="'users-form'"
+      :errors="dataPasswordErrors"
+    />
+    <div class="error-message users-form-errors">
       <small
         v-if="correctAuthenticationError"
-        class="users-form-errors__authentification"
+        class="error-message__text users-form-errors__authentification"
       >
         Введен неверный логин или пароль
       </small>
     </div>
-    <button
-      class="users-form__button"
-    >
-      {{ isRegistered ? 'Войти' : 'Зарегестрироваться' }}
-    </button>
+    <submit-button
+      :text="submitButtonText"
+      :class-name="'users-form'"
+      :width="'358px'"
+    />
   </form>
 </template>
 
 <script>
 import { validationMixin } from 'vuelidate'
 import {
-  required, maxLength, minLength
+  required,
+  maxLength,
+  minLength
 } from 'vuelidate/lib/validators'
 import {
-  containsUppercase, containsLowercase, containsNumber, containsSpecial, containsOnlyLatinLetters, containsOnlyPassword
+  containsUppercase,
+  containsLowercase,
+  containsNumber,
+  containsSpecial,
+  containsOnlyLatinLetters,
+  containsOnlyPassword
 } from '@/assets/utils/customVuelidate'
-import ErrorsMassege from '@/components/ErrorsMassege'
+import data from '@/mixins/data/vuelidate'
+import ErrorsMessage from '@/components/elements/ErrorsMessage'
+import SubmitButton from '@/components/elements/SubmitButton'
 
 export default {
   components: {
-    ErrorsMassege
+    ErrorsMessage,
+    SubmitButton
   },
-  mixins: [validationMixin],
+  mixins: [
+    validationMixin,
+    data
+  ],
   data () {
     return {
-      login: '',
-      password: '',
+      form: {
+        login: '',
+        password: ''
+      },
       correctAuthenticationError: false,
-      isRegistered: false,
-      dataLoginErrors: null
+      isRegistered: false
+    }
+  },
+  computed: {
+    submitButtonText () {
+      return this.isRegistered ? 'Войти' : 'Зарегестрироваться'
     }
   },
   created () {
     if (this.$store.getters['user/isRegistered']) {
       this.isRegistered = true
     }
-
-    this.fillData()
   },
   methods: {
     submitHandler () {
       if (!this.isRegistered) {
-        this.$v.login.$touch()
-        this.$v.password.$touch()
+        this.$v.form.login.$touch()
+        this.$v.form.password.$touch()
         if (!this.$v.$error) {
-          this.$store.commit('user/setLogin', this.login)
-          this.$store.commit('user/setPassword', this.password)
+          this.$store.commit('user/setLogin', this.form.login)
+          this.$store.commit('user/setPassword', this.form.password)
           this.$store.commit('user/register')
           this.isRegistered = true
-          this.login = ''
-          this.password = ''
+          this.form.login = ''
+          this.form.password = ''
           this.$v.$reset()
         }
       } else {
         const login = this.$store.getters['user/login']
         const password = this.$store.getters['user/password']
 
-        if (this.login === login && this.password === password) {
+        if (this.form.login === login && this.form.password === password) {
           this.correctAuthenticationError = false
           this.$store.commit('user/authorize')
           this.$router.push('/user')
@@ -135,44 +126,27 @@ export default {
           this.correctAuthenticationError = true
         }
       }
-    },
-    fillData () {
-      this.dataLoginErrors = [
-        {
-          className: 'requaired',
-          text: 'Введите пожалуйста логин',
-          condition: this.$v.login.$dirty && !this.$v.login.required
-        },
-        {
-          className: 'contains-only-latin-letters',
-          text: 'Логин может содержать только буквы латинского алфавита',
-          condition: this.$v.login.$dirty && !this.$v.login.containsOnlyLatinLetters
-        },
-        {
-          className: 'length',
-          text: 'Логин должен содержать не менее 3 и не более 20 символов',
-          condition: this.$v.login.$dirty && (!this.$v.login.minLength || !this.$v.login.maxLength)
-        }
-      ]
     }
   },
   validations () {
     return {
-      login: {
-        required,
-        containsOnlyLatinLetters,
-        minLength: minLength(3),
-        maxLength: maxLength(20)
-      },
-      password: {
-        required,
-        containsOnlyPassword,
-        minLength: minLength(8),
-        maxLength: maxLength(25),
-        containsLowercase,
-        containsUppercase,
-        containsNumber,
-        containsSpecial
+      form: {
+        login: {
+          required,
+          containsOnlyLatinLetters,
+          minLength: minLength(3),
+          maxLength: maxLength(20)
+        },
+        password: {
+          required,
+          containsOnlyPassword,
+          minLength: minLength(8),
+          maxLength: maxLength(25),
+          containsLowercase,
+          containsUppercase,
+          containsNumber,
+          containsSpecial
+        }
       }
     }
   }
@@ -180,6 +154,10 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../assets/style/mixins';
+
+@include errors-message();
+
 .users-form {
   position: absolute;
   top: 139px;
@@ -204,48 +182,15 @@ export default {
     width: 358px;
     height: 44px;
     padding-left: 20px;
-    border: 1px solid #cbcbcb;
+    border: 1px solid $secondary-color;
     margin-bottom: 16px;
-    background: #fff;
+    background: $panel;
     border-radius: 10px;
+    font-weight: 400;
     outline: none;
 
     &_error {
-      border-color: #d6073d;
-    }
-  }
-
-  &-errors {
-    position: relative;
-    width: 100%;
-    margin-bottom: 15px;
-
-    &__login,
-    &__password,
-    &__authentification {
-      position: absolute;
-      display: block;
-      width: 100%;
-      margin-bottom: 5px;
-      color: #d6073d;
-      font-size: smaller;
-      text-align: left;
-    }
-  }
-
-  &__button {
-    width: 358px;
-    height: 44px;
-    border: 0;
-    background: #d6073d;
-    border-radius: 10px;
-    color: #fff;
-    cursor: pointer;
-    outline: none;
-    text-decoration: none;
-
-    &:hover {
-      background: darken(#d6073d, 12.5%);
+      border-color: $main-theme;
     }
   }
 

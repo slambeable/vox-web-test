@@ -1,8 +1,30 @@
+@import './colors';
+
 @mixin title() {
   .title {
     margin-top: 40px;
-    color: #303136;
+    color: $title;
     font-size: 20px;
     font-weight: 500;
+  }
+}
+
+@mixin errors-message() {
+  .error-message {
+    position: relative;
+    width: 100%;
+    margin-bottom: 15px;
+
+    &__text {
+      position: absolute;
+      bottom: 8px;
+      display: block;
+      width: 100%;
+      color: $main-theme;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 15px;
+      text-align: left;
+    }
   }
 }

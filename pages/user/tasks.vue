@@ -22,7 +22,8 @@ export default {
     [random],
   data () {
     return {
-      tasks: []
+      tasks: [],
+      maxTasks: 199
     }
   },
   created () {
@@ -31,7 +32,7 @@ export default {
   methods: {
     async giveTasks () {
       const request = await this.$axios.$get('https://jsonplaceholder.typicode.com/todos')
-      const randomNumber = this.getRandom(0, 199)
+      const randomNumber = this.getRandom(0, this.maxTasks)
       this.tasks = request.slice(randomNumber)
     }
   },

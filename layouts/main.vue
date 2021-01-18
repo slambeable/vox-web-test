@@ -142,17 +142,11 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/fonts';
+@import '../assets/style/colors';
+
 html {
   box-sizing: border-box;
-  font-family:
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
   font-size: 16px;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -162,11 +156,17 @@ html {
 }
 
 body {
-  background: #eff1f9;
+  background: $body;
+}
+
+button {
+  touch-action: manipulation;
 }
 
 * {
+  font-family: 'Montserrat', sans-serif;
   font-size: 16px;
+  font-weight: 500;
 }
 
 *,
@@ -185,7 +185,7 @@ body {
   z-index: 10;
   width: 100%;
   height: 64px;
-  background: #fff;
+  background: $panel;
 
   &__toggle {
     position: absolute;
@@ -226,7 +226,7 @@ body {
   z-index: 10;
   width: 256px;
   height: 100vh;
-  background: #fff;
+  background: $panel;
 
   &_hide {
     width: 60px;
@@ -301,7 +301,7 @@ body {
       position: absolute;
       bottom: 48px;
       width: 100%;
-      color: #6f849c;
+      color: $exit;
 
       @media (max-width: 768px) {
         bottom: 12%;
@@ -335,29 +335,29 @@ body {
     }
 
     &:nth-child(1) > a::before {
-      background: url('../assets/images/icons/profile.svg') no-repeat center;
+      background: url('~assets/images/icons/profile.svg') no-repeat center;
     }
 
     &:nth-child(2) > a::before {
-      background: url('../assets/images/icons/task.svg') no-repeat center;
+      background: url('~assets/images/icons/task.svg') no-repeat center;
     }
 
     &:nth-child(3) > a::before {
-      background: url('../assets/images/icons/statistic.svg') no-repeat center;
+      background: url('~assets/images/icons/statistic.svg') no-repeat center;
     }
 
     &:nth-child(4) > a::before {
-      background: url('../assets/images/icons/exit.svg') no-repeat center;
+      background: url('~assets/images/icons/exit.svg') no-repeat center;
     }
 
     &:hover {
-      background: darken(#fff, 12.5%);
+      background: darken($panel, 12.5%);
     }
   }
 }
 
 .wrapper {
-  width: 70.3%;
+  width: 75%;
   margin-right: 20px;
   margin-left: 306px;
 

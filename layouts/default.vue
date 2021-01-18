@@ -4,18 +4,11 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
+@import '~assets/style/fonts';
+
 html {
   box-sizing: border-box;
-  font-family:
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
   font-size: 16px;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -24,8 +17,14 @@ html {
   word-spacing: 1px;
 }
 
+button {
+  touch-action: manipulation;
+}
+
 * {
+  font-family: 'Montserrat', sans-serif;
   font-size: 16px;
+  font-weight: 500;
 }
 
 *,

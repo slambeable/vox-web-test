@@ -10,21 +10,10 @@ export default {
     options: {
       default: null,
       type: Object
-    },
-    action: {
-      default: false,
-      type: Boolean
     }
   },
   mounted () {
     this.renderChart(this.chartData, this.options)
-  },
-  watch: {
-    action () {
-      if (this.action) {
-        this.$data._chart.update()
-      }
-    }
   }
 }
 </script>
