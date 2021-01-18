@@ -3,6 +3,9 @@ export default {
   ssr: false,
 
   // Target (https://go.nuxtjs.dev/config-target)
+  router: {
+    base: '/vox-web-test/'
+  },
   target: 'static',
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
@@ -52,8 +55,5 @@ export default {
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
-    analyze: {
-      analyzerMode: 'static'
-    }
   }
 }
