@@ -18,7 +18,7 @@
       placeholder="Логин"
     >
     <errors-message
-      :top="'8px'"
+      :top="'-8px'"
       :class-name="'users-form'"
       :errors="dataLoginErrors"
     />
@@ -32,7 +32,7 @@
       placeholder="Пароль"
     >
     <errors-message
-      :top="'8px'"
+      :top="'-8px'"
       :class-name="'users-form'"
       :errors="dataPasswordErrors"
     />
