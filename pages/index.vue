@@ -92,7 +92,7 @@ export default {
   },
   computed: {
     submitButtonText () {
-      return this.isRegistered ? 'Войти' : 'Зарегестрироваться'
+      return this.isRegistered ? 'Войти' : 'Зарегистрироваться'
     }
   },
   created () {
